@@ -1,0 +1,65 @@
+buildscript{
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.6.RELEASE")
+    }
+}
+
+
+subprojects {
+    group 'com.enterprise.management'
+    version '1.0.0-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile group: 'org.springframework', name: 'spring-context', version: '4.3.9.RELEASE'
+    }
+}
+
+project(':employee-persistence') {
+    dependencies {
+        // JPA Data (We are going to use Repositories, Entities, Hibernate, etc...)
+        compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+        compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
+        // MySQL Connector
+        compile 'mysql:mysql-connector-java'
+    }
+}
+
+project(':employee-service') {
+    dependencies {
+        compile project(':employee-persistence')
+    }
+}
+
+project(':employee-controller') {
+    dependencies {
+        //compile project(':employee-persistence')
+        compile project(':employee-service')
+        compile("io.springfox:springfox-swagger2:2.0.2") {
+            // already importer in presistence module
+            exclude group: 'org.springframework.hateoas'
+        }
+        compile("io.springfox:springfox-swagger-ui:2.0.2")
+        compile("org.springframework.boot:spring-boot-starter-web")
+        compile("org.springframework.boot:spring-boot-starter-security")
+
+
+        compile("io.jsonwebtoken:jjwt:0.7.0")
+        testCompile("org.springframework.boot:spring-boot-starter-test")
+    }
+}
+
+
